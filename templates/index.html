@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>OCR Application</h1>
+    <p>Upload an image containing text, and the OCR model will predict the text for you!</p>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" name="file" id="file-input" accept="image/*" required>
+        <button type="submit">Upload and Predict</button>
+    </form>
+    <h2>Predicted Text:</h2>
+    <p id="result">No prediction yet.</p>
+    <script>
+        const form = document.getElementById('upload-form');
+        const resultElement = document.getElementById('result');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultElement.textContent = result.predicted_text || 'No text found.';
+                } else {
+                    resultElement.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
